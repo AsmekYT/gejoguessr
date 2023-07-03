@@ -20,10 +20,19 @@ body {
 }
 
 img {
-  width: 200px;
+  width: 75%;
+  height: auto;
+  max-width: 400px;
   border-radius: 5%;
   margin-bottom: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  width: 75%;
+  max-width: 400px;
 }
 
 button {
@@ -36,10 +45,4 @@ button {
   cursor: pointer;
   margin-bottom: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-#language {
-  position: absolute;
-  top: 10px;
-  left: 10px;
 }
