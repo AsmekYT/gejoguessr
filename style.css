@@ -27,15 +27,7 @@ img {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-.button-container {
-  display: flex;
-  justify-content: center;
-  gap: 5%;
-  margin-top: 5%;
-}
-
 .button {
-  display: inline-block;
   padding: 10px 20px;
   font-size: 18px;
   background-color: #4caf50;
