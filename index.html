@@ -1,11 +1,34 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-<title>Who is gay?</title>
+  <title>Who is gay?</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    
+    #language {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+  </style>
 </head>
 <body>
-  <p>Tutaj będzie gra</p>
-  <button id="gey">Gey</button>
-  <button id="notgey">Not gey</button>
+  <div class="container">
+    <img src="1.jpg" alt="gey or not" width="200">
+    <button id="gey">Gey</button>
+    <button id="notgey">Not gey</button>
+  </div>
+  
+  <select id="language">
+    <option value="pl">PL</option>
+    <option value="en">EN</option>
+  </select>
 </body>
 </html>
