@@ -1,19 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
-  <title>Kto jest gejem?</title>
-  <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gejoguessr</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <img src="2.jpg" alt="gey or not" width="200">
-    <button id="gey">Gej</button>
-    <button id="notgey">Nie gej</button>
-  </div>
-  
-  <select id="language">
-    <option value="pl">PL</option>
-    <option value="en">EN</option>
-  </select>
+
+<h1 class="main-title" data-translate="title">Gejoguessr</h1>
+
+<div id="disclaimer-popup" class="popup-overlay">
+    <div class="popup-content">
+        <div class="popup-language-switcher">
+            <img src="https://gejoguessr.asmek.me/api/images/flags/pl.png" alt="Polski" data-lang="pl" class="lang-flag">
+            <img src="https://gejoguessr.asmek.me/api/images/flags/en.png" alt="English" data-lang="en" class="lang-flag">
+        </div>
+        <h2 data-translate="disclaimer_title">Uwaga</h2>
+        <p data-translate="disclaimer_text">Ta gra ma charakter wyłącznie humorystyczny i nie ma na celu obrażania ani atakowania przedstawionych osób ani żadnej grupy społecznej. Orientacja seksualna jest prywatną sprawą każdej osoby.</p>
+        <button id="disclaimer-ok-btn" data-translate="disclaimer_button">Rozumiem</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="language-switcher">
+        <img src="https://gejoguessr.asmek.me/api/images/flags/pl.png" alt="Polski" data-lang="pl" class="lang-flag">
+        <img src="https://gejoguessr.asmek.me/api/images/flags/en.png" alt="English" data-lang="en" class="lang-flag">
+    </div>
+
+    <h2 id="influencer-name" data-translate="loading_name">Ładowanie...</h2>
+    <p id="instruction-text" data-translate="instruction">oceń czy jest gejem i sprawdź co sądzą inni!</p>
+
+    <div id="game-area">
+        <img id="influencer-image" src="" alt="Influencer Image">
+        <p id="question" data-translate="question">Czy ta osoba jest...</p>
+        <div id="vote-buttons">
+            <button class="vote-btn" data-guess="gay" data-translate="button_gay">Gejem</button>
+            <button class="vote-btn" data-guess="straight" data-translate="button_straight">Straight</button>
+        </div>
+    </div>
+
+    <div id="stats-area" style="display: none;">
+        <h2 data-translate="stats_title">Wyniki:</h2>
+        <div class="chart-container">
+            <div class="chart-segment">
+                <div class="chart-label" data-translate="button_gay">Gej</div>
+                <div class="chart-bar-wrapper">
+                    <div class="chart-bar gay-bar" style="width: 0%;"></div>
+                </div>
+                <div class="percentage-label gay-perc">0%</div>
+            </div>
+            <div class="chart-segment">
+                <div class="chart-label" data-translate="button_straight">Straight</div>
+                <div class="chart-bar-wrapper">
+                    <div class="chart-bar straight-bar" style="width: 0%;"></div>
+                </div>
+                <div class="percentage-label straight-perc">0%</div>
+            </div>
+        </div>
+        <button id="next-btn" data-translate="button_next">Następny</button>
+    </div>
+</div>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
