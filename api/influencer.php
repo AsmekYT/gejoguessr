@@ -20,14 +20,11 @@ if (!isset($conn) || !$conn || $conn->connect_error) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payload = file_get_contents('php://input');
-    // --- LOG: Otrzymany payload ---
     error_log("influencer.php: Received Payload: " . $payload);
     $input = json_decode($payload, true);
     if (isset($input['exclude_ids']) && is_array($input['exclude_ids'])) {
-        // Poprawne użycie array_filter
         $excludedIds = array_filter($input['exclude_ids'], 'is_numeric');
         $excludedIds = array_map('intval', $excludedIds);
-        // --- LOG: Sparsowane exclude_ids ---
         error_log("influencer.php: Parsed exclude_ids: " . print_r($excludedIds, true));
     } else {
         error_log("influencer.php: exclude_ids not found or not an array in payload.");
