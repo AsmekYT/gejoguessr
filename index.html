@@ -5,10 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gejoguessr</title>
     <link rel="stylesheet" href="style.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="api/images/logos/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="api/images/logos/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="api/images/logos/favicons/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" href="api/images/logos/favicons/favicon.ico">
+    <meta name="theme-color" content="#ffffff">
 </head>
 <body>
 
-<h1 class="main-title" data-translate="title">Gejoguessr</h1>
+<div class="title-container">
+    <img src="api/images/logos/gejoguessr_logo.png" alt="Logo" class="title-logo left-logo">
+    <h1 class="main-title" data-translate="title">Gejoguessr</h1>
+    <img src="api/images/logos/gejoguessr_logo.png" alt="Logo" class="title-logo right-logo">
+</div>
 
 <div id="disclaimer-popup" class="popup-overlay">
     <div class="popup-content">
@@ -61,6 +72,12 @@
         <button id="next-btn" data-translate="button_next">Następny</button>
     </div>
 </div>
+
+<footer class="site-footer">
+    <a href="https://asmek.me" target="_blank" rel="noopener noreferrer">
+        © 2025 Asmek page. All rights reserved.
+    </a>
+</footer>
 
 <script src="lang.js"></script>
 <script src="app.js"></script>

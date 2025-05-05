@@ -39,7 +39,7 @@ function clearSeenHistory() {
 
 async function fetchInfluencer() {
     const excludedIds = getSeenInfluencers();
-    console.log(`WorkspaceING: Excluding ${excludedIds.length} IDs`);
+    console.log(`Workspaceing: Excluding ${excludedIds.length} IDs`);
     try {
         const response = await fetch('/api/influencer.php', {
             method: 'POST',
@@ -48,14 +48,31 @@ async function fetchInfluencer() {
         });
 
         if (!response.ok) {
-            if (response.status === 404) {
-                const errorData = await response.json().catch(() => ({ error: 'Not found' }));
-                throw new Error(errorData.error === 'No available influencers found.' ? 'no_more_influencers' : `HTTP error! status: ${response.status}`);
+            let errorData = { error: `HTTP error! status: ${response.status}` };
+            try {
+                errorData = await response.json();
+            } catch (e) {
+                const errorText = await response.text().catch(() => 'Could not read error text');
+                console.error(`Influencer API Error Response (Status: ${response.status}):`, errorText);
             }
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorMessage = errorData.error === 'No available influencers found.' ? 'no_more_influencers' : (errorData.error || `HTTP error! status: ${response.status}`);
+            throw new Error(errorMessage);
         }
-        const data = await response.json();
-        if (data.error) { throw new Error(data.error); }
+
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            console.error("Failed to parse JSON response from influencer API:", parseError);
+            const responseText = await response.text().catch(() => 'Could not read response text');
+            console.error("Influencer API Raw Response Text:", responseText);
+            throw new Error("Invalid JSON response received from server.");
+        }
+
+        if (data.error) {
+            console.error("Influencer API returned an error:", data.error);
+            throw new Error(data.error);
+        }
         console.log("FETCHED successfully:", data);
         return data;
     } catch (error) {
@@ -65,19 +82,40 @@ async function fetchInfluencer() {
 }
 
 async function submitVote(id, guess) {
+    let response;
     try {
-        const response = await fetch('/api/vote.php', {
+        response = await fetch('/api/vote.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ influencer_id: id, guess: guess }),
         });
-        if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`); }
-        const data = await response.json();
-        if (data.error) { throw new Error(data.error); }
+
+        if (!response.ok) {
+            const errorText = await response.text().catch(() => 'Could not read error text');
+            console.error(`Vote API Error Response (Status: ${response.status}):`, errorText);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        let data;
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            console.error("Failed to parse JSON response from vote API:", parseError);
+            const responseText = await response.text().catch(() => 'Could not read response text');
+            console.error("Vote API Raw Response Text:", responseText);
+            throw new Error("Invalid JSON response received from server.");
+        }
+
+
+        if (data.error) {
+            console.error("Vote API returned an error in JSON:", data.error);
+            throw new Error(data.error);
+        }
         return data;
+
     } catch (error) {
-        console.error("Error submitting vote:", error);
-        alert("Failed to submit vote.");
+        console.error("Error submitting vote:", error.message);
+        alert("Failed to submit vote. Check console for details.");
         return null;
     }
 }
@@ -136,6 +174,10 @@ function displayInfluencer(influencer) {
     if (influencerImage) {
         influencerImage.src = influencer.image_url;
         influencerImage.alt = `Image of ${nameToShow}`;
+        influencerImage.onerror = () => {
+            console.error(`Failed to load image: ${influencer.image_url}`);
+            influencerImage.alt = typeof getTranslation === 'function' ? getTranslation('loading_error') : 'Error loading image.';
+        };
     }
     addInfluencerToSeen(currentInfluencerId);
 
@@ -158,6 +200,7 @@ function handleFetchError(error) {
         const errorMessageKey = error.message === 'no_more_influencers' ? 'no_more_influencers' : 'loading_error';
         influencerImage.alt = typeof getTranslation === 'function' ? getTranslation(errorMessageKey) : errorMessageKey;
         influencerImage.src = "";
+        influencerImage.onerror = null; // Remove error handler if fetch failed
     }
     voteBtnElements.forEach(btn => btn.disabled = true);
     if (voteButtons) voteButtons.style.display = 'none';
@@ -171,13 +214,17 @@ async function loadNextInfluencer() {
     if (statsArea) statsArea.style.display = 'none';
     if (voteButtons) voteButtons.style.display = 'block';
     if (questionElement) questionElement.style.display = 'block';
-    if (instructionTextElement) instructionTextElement.style.display = 'block';
+    if (instructionTextElement) {
+        instructionTextElement.style.display = 'block';
+        if(typeof getTranslation === 'function') instructionTextElement.textContent = getTranslation('instruction');
+    }
     if (nextButton) nextButton.disabled = true;
 
     if (influencerNameElement) influencerNameElement.textContent = typeof getTranslation === 'function' ? getTranslation('loading_name') : 'Loading name...';
     if (influencerImage) {
         influencerImage.src = "";
         influencerImage.alt = typeof getTranslation === 'function' ? getTranslation('loading') : 'Loading...';
+        influencerImage.onerror = null;
     }
     voteBtnElements.forEach(btn => btn.disabled = true);
 
@@ -222,9 +269,9 @@ if(disclaimerOkButton) {
     disclaimerOkButton.addEventListener('click', async () => {
         console.log("Disclaimer OK clicked");
         if (!firstInfluencerPromise) {
-            console.error("First influencer promise not available!");
+            console.error("First influencer promise not available! Loading manually.");
             if(nextButton) nextButton.disabled = true;
-            loadNextInfluencer();
+            loadNextInfluencer(); // Attempt to load directly
             if(disclaimerPopup) disclaimerPopup.style.display = 'none';
             return;
         }
@@ -270,10 +317,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if(disclaimerPopup) {
         disclaimerPopup.style.display = 'flex';
         console.log("Disclaimer shown. Initiating background fetch...");
-        firstInfluencerPromise = fetchInfluencer();
-        firstInfluencerPromise.catch(error => {
-            console.warn("Background fetch promise rejected:", error.message);
+        firstInfluencerPromise = fetchInfluencer().catch(error => {
+            console.warn("Background pre-fetch failed:", error.message);
+            return null;
         });
+
     } else {
         console.warn("Disclaimer popup not found, loading influencer directly.");
         if(nextButton) nextButton.disabled = true;
